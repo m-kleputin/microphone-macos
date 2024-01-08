@@ -42,4 +42,4 @@ jobs:
         with:
           tag_name: prerelease
           prerelease: true
-          files: Microphone-${{env.version}}.zip
+          files: Microphona-${{env.version}}.zip
