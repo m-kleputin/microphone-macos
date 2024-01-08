@@ -2,7 +2,8 @@ name: Main
 
 on:
   push:
-    branches: [ "master" ]
+    tags:        
+      - '*' 
 
 jobs:
   build:
@@ -18,10 +19,6 @@ jobs:
         if: github.ref_type == 'tag'
         run: echo "version=$(git describe --tags --match 'v*')" >> $GITHUB_ENV
 
-      - name: Set version for branch
-        if: github.ref_type == 'branch'
-        run: echo "version=$(git describe --tags)" >> $GITHUB_ENV
-
       - name: Build
         env:
           DEVELOPER_DIR: /Applications/Xcode_14.1.app/Contents/Developer
@@ -30,16 +27,25 @@ jobs:
           xcodebuild archive -archivePath Microphone.xcarchive -exportArchive -exportOptionsPlist export_options.plist -exportPath .
           zip -r "Microphone-${{env.version}}.zip" "Microphone.app"
 
-      # - name: Release
-      #   if: github.ref_type == 'tag'
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     files: Microphone-${{env.version}}.zip
+      - name: Create Release
+        if: github.ref_type == 'tag'
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
 
-      # - name: Prerelease
-      #   if: github.ref_type == 'branch'
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     tag_name: prerelease
-      #     prerelease: true
-      #     files: Microphona-${{env.version}}.zip
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./Microphone-${{env.version}}.zip
+          asset_name: Microphone.zip
+          asset_content_type: application/zip
