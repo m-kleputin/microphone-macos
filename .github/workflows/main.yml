@@ -30,16 +30,16 @@ jobs:
           xcodebuild archive -archivePath Microphone.xcarchive -exportArchive -exportOptionsPlist export_options.plist -exportPath .
           zip -r "Microphone-${{env.version}}.zip" "Microphone.app"
 
-      - name: Release
-        if: github.ref_type == 'tag'
-        uses: softprops/action-gh-release@v1
-        with:
-          files: Microphone-${{env.version}}.zip
+      # - name: Release
+      #   if: github.ref_type == 'tag'
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     files: Microphone-${{env.version}}.zip
 
-      - name: Prerelease
-        if: github.ref_type == 'branch'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: prerelease
-          prerelease: true
-          files: Microphona-${{env.version}}.zip
+      # - name: Prerelease
+      #   if: github.ref_type == 'branch'
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     tag_name: prerelease
+      #     prerelease: true
+      #     files: Microphona-${{env.version}}.zip
